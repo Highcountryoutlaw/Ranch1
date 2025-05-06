@@ -1,0 +1,76 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ranch Vacation Demo</title>
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.2.11/dist/web3.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    header { text-align: center; }
+    section { margin-top: 20px; }
+    #wallet-address { margin-top: 10px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Welcome to the Ranch Vacation</h1>
+    <p>Book your stay and connect your wallet!</p>
+  </header>
+
+  <section id="vacation-details">
+    <h2>Book Your Stay</h2>
+    <form id="booking-form">
+      <input type="text" id="name" placeholder="Full Name" required><br><br>
+      <input type="email" id="email" placeholder="Email Address" required><br><br>
+      <button type="submit">Book Now</button>
+    </form>
+  </section>
+
+  <section id="wallet-connection">
+    <h2>Connect Your Wallet</h2>
+    <button id="connect-wallet">Connect Wallet</button>
+    <p id="wallet-address"></p>
+  </section>
+
+  <script>
+    let web3;
+    let userAccount;
+
+    window.onload = () => {
+      if (typeof window.ethereum !== 'undefined') {
+        web3 = new Web3(window.ethereum);
+        document.getElementById('connect-wallet').onclick = connectWallet;
+      } else {
+        alert('MetaMask is not installed. Please install it to use this app.');
+      }
+    };
+
+    async function connectWallet() {
+      try {
+        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+        userAccount = accounts[0];
+        document.getElementById('wallet-address').textContent = `Connected: ${userAccount}`;
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    document.getElementById('booking-form').addEventListener('submit', function(event) {
+      event.preventDefault();
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+
+      fetch('/api/book', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, wallet: userAccount })
+      })
+      .then(response => response.json())
+      .then(data => alert('Booking Successful!'))
+      .catch(error => alert('Error booking.'));
+    });
+  </script>
+</body>
+</html>
