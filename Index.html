@@ -47,3 +47,26 @@
   </div>
 </body>
 </html>
+let web3;
+
+window.onload = () => {
+  if (typeof window.ethereum !== 'undefined') {
+    web3 = new Web3(window.ethereum);
+    document.getElementById('connect-wallet').onclick = connectWallet;
+  } else {
+    alert('Please install MetaMask to connect your wallet!');
+  }
+};
+
+async function connectWallet() {
+  try {
+    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+    document.getElementById('wallet-address').textContent = `Connected: ${accounts[0]}`;
+  } catch (error) {
+    console.error(error);
+  }
+}
+/public
+  - index.html
+/src
+  - wallet.js        (Web3 wallet integration script)
